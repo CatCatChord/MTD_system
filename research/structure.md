@@ -1,0 +1,89 @@
+# 项目结构
+
+**根目录:** `/home/ckb/malicious_traffic_detection/research`
+
+```
+- 📁 **datasets/**
+  - 📁 **CIC-IDS2017/**
+    - 📁 **MachineLearningCSV/**
+      - 📄 Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
+      - 📄 Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv
+      - 📄 Friday-WorkingHours-Morning.pcap_ISCX.csv
+      - 📄 Monday-WorkingHours.pcap_ISCX.csv
+      - 📄 Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv
+      - 📄 Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv
+      - 📄 Tuesday-WorkingHours.pcap_ISCX.csv
+      - 📄 Wednesday-workingHours.pcap_ISCX.csv
+    - 📁 **pcaps/**
+      - 📄 Friday-WorkingHours.pcap
+      - 📄 Monday-WorkingHours.pcap
+      - 📄 Wednesday-workingHours.pcap
+    - 📄 Benign-Monday-no-metadata.parquet
+    - 📄 Botnet-Friday-no-metadata.parquet
+    - 📄 Bruteforce-Tuesday-no-metadata.parquet
+    - 📄 DDoS-Friday-no-metadata.parquet
+    - 📄 DoS-Wednesday-no-metadata.parquet
+    - 📄 Infiltration-Thursday-no-metadata.parquet
+    - 📄 Portscan-Friday-no-metadata.parquet
+    - 📄 WebAttacks-Thursday-no-metadata.parquet
+  - 📁 **USTC-TFC2016/**
+    - 📁 **Benign/**
+      - 📄 BitTorrent.pcap
+      - 📄 Facetime.pcap
+      - 📄 FTP.pcap
+      - 📄 Gmail.pcap
+      - 📄 MySQL.pcap
+      - 📄 Outlook.pcap
+      - 📄 Skype.pcap
+      - 📄 SMB.7z
+      - 📄 Weibo.7z
+      - 📄 WorldOfWarcraft.pcap
+    - 📁 **Malware/**
+      - 📄 Cridex.7z
+      - 📄 Geodo.7z
+      - 📄 Htbot.7z
+      - 📄 Miuref.pcap
+      - 📄 Neris.7z
+      - 📄 Nsis-ay.7z
+      - 📄 Shifu.7z
+      - 📄 Tinba.pcap
+      - 📄 Virut.7z
+      - 📄 Zeus.pcap
+    - 📁 **processed/**
+    - 📄 LICENSE
+    - 📄 README.md
+- 📁 **processed_data/**
+  - 📄 CIC_cnn_rnn_data.npz
+  - 📄 CIC_lstm_data.npz
+  - 📄 CIC_resnet_data.npz
+  - 📄 USTC_cnn_rnn_data.npz
+  - 📄 USTC_etbert_data.npz
+  - 📄 USTC_lstm_data.npz
+  - 📄 USTC_resnet_data.npz
+  - 📄 X_lstm.npy
+  - 📄 X_resnet.npy
+  - 📄 y_labels.npy
+- 📁 **saved_models/**
+  - 📄 CIC_cnn_rnn_best.pth
+  - 📄 CIC_cnn_rnn_curves.png
+  - 📄 CIC_cnn_rnn_final.pth
+  - 📄 CIC_cnn_rnn_history.json
+  - 📄 CIC_lstm_best.pth
+  - 📄 CIC_lstm_curves.png
+  - 📄 CIC_lstm_final.pth
+  - 📄 CIC_lstm_history.json
+  - 📄 CIC_resnet_best.pth
+  - 📄 CIC_resnet_curves.png
+  - 📄 CIC_resnet_final.pth
+  - 📄 CIC_resnet_history.json
+- 📁 **utils/**
+  - 📄 data_preprocessing.py
+  - 📄 process_cic.py
+  - 📄 process_ustc.py
+- 📄 best_resnet.pth
+- 📄 debug.py
+- 📄 requirements.txt
+- 📄 structure.md
+- 📄 train.py
+- 📄 training_log.txt
+```

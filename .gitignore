@@ -1,0 +1,135 @@
+# ================================================
+# Python
+# ================================================
+# Virtual environments
+.venv/
+.venv_*/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# ================================================
+# Node / Frontend
+# ================================================
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.local
+
+# Frontend build & cache
+*.timestamp-*-*.mjs
+.eslintcache
+*.tsbuildinfo
+
+# ================================================
+# IDE & Editors
+# ================================================
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ================================================
+# OS generated files
+# ================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ================================================
+# Machine Learning Models & Data
+# ================================================
+# Model weights (too large for Git)
+*.pth
+*.bin
+*.safetensors
+*.pt
+*.h5
+*.onnx
+*.ckpt
+
+# Datasets & processed data (regenerate via scripts)
+research/datasets/
+research/processed_data/
+*.npz
+*.npy
+*.pcap
+*.pcapng
+*.csv
+*.parquet
+*.tsv
+*.7z
+*.zip
+*.tar.gz
+
+# Cache / temporary files
+*.pkl
+*.pickle
+*.cache
+cache/
+
+# ================================================
+# Project specific
+# ================================================
+# Temporary / backup files
+pdf_text.txt
+*.tmp
+*.bak
+*.log
+logs/
+
+# Misc
+Microsoft.VisualStudio.Services.VSIXPackage
+frontend/src/App - 副本vue.txt

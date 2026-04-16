@@ -1,0 +1,6 @@
+
+numpy>=1.24.0
+pandas>=2.0.0
+scikit-learn>=1.3.0         # train_test_split, LabelEncoder等
+tqdm>=4.65.0                # 进度条
+matplotlib>=3.7.0           # 训练曲线可视化
