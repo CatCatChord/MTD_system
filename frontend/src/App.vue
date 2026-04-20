@@ -5,7 +5,7 @@
     <header class="navbar">
       <div class="brand">
         <el-icon :size="24" class="logo-icon"><Platform /></el-icon>
-        <span class="title">网络威胁感知系统 <small>v3.0 E2E</small></span>
+        <span class="title">网络威胁感知系统 <small>v3.1 System</small></span>
       </div>
       
       <div class="controls-area">
@@ -16,6 +16,9 @@
           </el-button>
           <el-button type="warning" :plain="!showOfflineTestDialog" @click="showOfflineTestDialog = true">
             <el-icon style="margin-right:5px"><UploadFilled /></el-icon> 离线 PCAP 分析
+          </el-button>
+          <el-button type="info" :plain="!showRecordsDialog" @click="openRecordsDialog">
+            <el-icon style="margin-right:5px"><List /></el-icon> 检测记录
           </el-button>
         </el-button-group>
 
@@ -53,6 +56,14 @@
           <div class="card-title">恶意威胁 (Malicious)</div>
           <div class="card-num text-red">{{ stats.malicious_count || 0 }}</div>
           <div class="card-sub">拦截率: {{ calcRate(stats.malicious_count, stats.total_packets) }}%</div>
+        </div>
+        <div class="cyber-card">
+          <div class="card-title">模型统计 (Model Stats)</div>
+          <div class="card-num text-green">{{ modelStats.total_inferences || 0 }}</div>
+          <div class="card-sub">
+            检出: {{ modelStats.malicious_count || 0 }} | 
+            平均置信度: {{ (modelStats.avg_confidence * 100).toFixed(1) }}%
+          </div>
         </div>
         <div class="cyber-card">
           <div class="card-title">系统状态 (Status)</div>
@@ -187,6 +198,46 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- ================= 弹窗：检测记录查询 ================= -->
+    <el-dialog
+      v-model="showRecordsDialog"
+      title="检测记录查询"
+      width="900px"
+      custom-class="cyber-dialog"
+      :close-on-click-modal="false"
+    >
+      <div style="margin-bottom: 12px;">
+        <el-radio-group v-model="recordsFilter" size="small" @change="fetchRecords">
+          <el-radio-button :label="null">全部</el-radio-button>
+          <el-radio-button :label="1">实时嗅探</el-radio-button>
+          <el-radio-button :label="0">离线分析</el-radio-button>
+        </el-radio-group>
+      </div>
+      <el-table :data="records" style="width: 100%; background: transparent;" height="400" size="small">
+        <el-table-column prop="id" label="ID" width="60" />
+        <el-table-column prop="timestamp" label="时间" width="150" />
+        <el-table-column prop="source" label="来源" width="100" />
+        <el-table-column prop="flow_key" label="五元组" show-overflow-tooltip />
+        <el-table-column prop="model_name" label="模型" width="140" />
+        <el-table-column prop="prediction" label="判定" width="90">
+          <template #default="scope">
+            <span :class="scope.row.prediction === 'Malicious' ? 'tag-malicious' : 'tag-normal'">
+              {{ scope.row.prediction }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="confidence" label="置信度" width="100">
+          <template #default="scope">
+            {{ (scope.row.confidence * 100).toFixed(1) }}%
+          </template>
+        </el-table-column>
+        <el-table-column prop="packets_count" label="包数" width="70" />
+      </el-table>
+      <template #footer>
+        <el-button @click="showRecordsDialog = false">关 闭</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -206,15 +257,22 @@ let myChart = null
 let timer = null
 const viewMode = ref('realtime')
 
+// 模型性能统计
+const modelStats = ref({ total_inferences: 0, malicious_count: 0, avg_confidence: 0 })
+
 // 注意：确保后端的端口是 18000
 const API_BASE = 'http://localhost:18000/api'
 
 // === 离线测试状态 ===
 const showOfflineTestDialog = ref(false)
 const isTesting = ref(false)
-// 默认选 ustc 权重，默认是 -1 (外部未知混合包)
 const testForm = ref({ model_name: 'resnet', dataset_type: 'ustc', ground_truth: -1, file: null })
 const testResult = ref(null)
+
+// === 检测记录状态 ===
+const showRecordsDialog = ref(false)
+const records = ref([])
+const recordsFilter = ref(null)
 
 // ================= 业务逻辑 =================
 const calcRate = (part, total) => {
@@ -256,7 +314,7 @@ const submitOfflineTest = async () => {
   const formData = new FormData()
   formData.append('file', testForm.value.file)
   formData.append('model_name', testForm.value.model_name)
-  formData.append('dataset_type', testForm.value.dataset_type) // 传给后端
+  formData.append('dataset_type', testForm.value.dataset_type)
   formData.append('ground_truth', testForm.value.ground_truth)
 
   try {
@@ -274,6 +332,42 @@ const submitOfflineTest = async () => {
     ElMessage.error('请求超时或后端计算错误')
   } finally {
     isTesting.value = false
+  }
+}
+
+// === 检测记录查询 ===
+const openRecordsDialog = () => {
+  showRecordsDialog.value = true
+  fetchRecords()
+}
+
+const fetchRecords = async () => {
+  try {
+    const params = { limit: 100, offset: 0 }
+    if (recordsFilter.value !== null) {
+      params.realtime = recordsFilter.value
+    }
+    const res = await axios.get(`${API_BASE}/records`, { params })
+    if (res.data.status === 'success') {
+      records.value = res.data.records
+    }
+  } catch (err) {
+    console.error('获取检测记录失败', err)
+  }
+}
+
+// === 模型性能统计 ===
+const fetchPerformance = async () => {
+  try {
+    const res = await axios.get(`${API_BASE}/performance`)
+    if (res.data.status === 'success' && res.data.models.length > 0) {
+      // 找当前模型的统计，若没有则取第一个
+      const current = res.data.models.find(m => m.model_name === currentModelName.value)
+        || res.data.models[0]
+      modelStats.value = current
+    }
+  } catch (err) {
+    // 静默失败
   }
 }
 
@@ -314,6 +408,9 @@ const fetchData = async () => {
         })
       }
     }
+    
+    // 顺带拉取模型性能统计
+    fetchPerformance()
   } catch (err) {
     // 静默失败
   }
@@ -363,13 +460,14 @@ body, html, #app {
 
 .main-content { padding: 20px; flex: 1; display: flex; flex-direction: column; gap: 20px; }
 
-.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 .cyber-card {
   background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; position: relative; overflow: hidden;
 }
 .cyber-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent-blue); }
 .cyber-card:nth-child(2)::before { background: var(--accent-red); }
 .cyber-card:nth-child(3)::before { background: var(--accent-green); }
+.cyber-card:nth-child(4)::before { background: #a855f7; }
 
 .card-title { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; }
 .card-num { font-size: 32px; font-weight: 700; margin-top: 5px; font-family: 'Courier New', monospace; }

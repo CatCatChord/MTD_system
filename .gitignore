@@ -130,6 +130,15 @@ pdf_text.txt
 *.log
 logs/
 
+# Experiment results (plots, tables, generated outputs)
+research/ablation_results/
+research/confusion_matrix_results/
+research/model_result/
+research/saved_models/
+
+# Runtime database
+backend/app/detection_records.db
+
 # Misc
 Microsoft.VisualStudio.Services.VSIXPackage
 frontend/src/App - 副本vue.txt
